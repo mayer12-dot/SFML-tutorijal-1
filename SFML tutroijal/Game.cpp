@@ -10,13 +10,28 @@ void Game::initWindow()
 {
 	this->videoMode.height = 600;
 	this->videoMode.width = 800;
+
 	this->window = new sf::RenderWindow(this->videoMode, "Game 1", sf::Style::Titlebar | sf::Style::Close);
+
+    std::cout << this->window;
+   this->window->setFramerateLimit(144);
 }
+void Game::initEnemies()
+{
+	this->enemy.setPosition(400.f, 300.f);
+	this->enemy.setSize(sf::Vector2f(100.f, 100.f));
+	this->enemy.setScale(sf::Vector2f(0.5f, 0.5f));
+    this->enemy.setFillColor(sf::Color::Cyan);
+    this->enemy.setOutlineColor(sf::Color::Green);
+	this->enemy.setOutlineThickness(3.f);
+}
+
 //Constructors and Destructors
 Game::Game()
 {
 	this->initVariables();
 	this->initWindow();
+	this->initEnemies();
 }
 
 Game::~Game()
@@ -73,9 +88,10 @@ void Game::render()
 	*	Render Game Objects
     */
 
-    this->window->clear(sf::Color::Red);
+    this->window->clear();
 
     //Draw your game objects here
+	this->window->draw(this->enemy);
 
     this->window->display();
 }

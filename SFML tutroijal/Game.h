@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <random>
+#include <iostream>
 
 class Game
 {
@@ -14,9 +15,12 @@ private:
 	sf::VideoMode videoMode;
 	sf::Event ev;
 
+	//Game objects
+	sf::RectangleShape enemy;
 
 	void initVariables();
 	void initWindow();
+	void initEnemies();
 
 public:	
 	// Constructors and Destructors
