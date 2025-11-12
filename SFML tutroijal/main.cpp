@@ -12,7 +12,10 @@ int main() {
 	Game game;
 
     // Uniformna raspodela u intervalu [1, 100]
-    std::uniform_int_distribution<> distrib(1, 100);
+    //std::uniform_int_distribution<> distrib(1, 100);
+
+	//init random seed
+	std::srand(static_cast<unsigned>(time(0)));
 
 
     while (game.running())
