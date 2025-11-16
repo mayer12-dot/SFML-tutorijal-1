@@ -10,6 +10,7 @@ void Game::initVariables()
     this->enemySpawnTimerMax = 10.f;
     this->enemySpawnTimer = this->enemySpawnTimerMax;
     this->maxEnemies = 10;
+	this->mouseHeld = false;
 }
 
 void Game::initWindow()
@@ -21,6 +22,23 @@ void Game::initWindow()
 
     std::cout << this->window;
    this->window->setFramerateLimit(60);
+}
+void Game::initFonts()
+{
+    if (this->font.loadFromFile("Fonts/Cookies Gingerbread.otf")) {
+        std::cout<< "Font loaded successfully" << std::endl;
+    }
+    else {
+        std::cout << "Error loading font" << std::endl;
+    }
+}
+void Game::initText()
+{
+    this->uiText.setFont(this->font);
+    this->uiText.setCharacterSize(24);
+    this->uiText.setFillColor(sf::Color::White);
+    this->uiText.setString(std::to_string(this->points));
+	this->uiText.setPosition(10.f, 10.f);
 }
 void Game::initEnemies()
 {
@@ -37,6 +55,8 @@ Game::Game()
 {
 	this->initVariables();
 	this->initWindow();
+    this->initFonts();
+    this->initText();
 	this->initEnemies();
 }
 
@@ -104,6 +124,17 @@ void Game::pollEvents()
 
 }
 
+void Game::updateText()
+{
+    /*std::stringstream ss;
+
+	ss << "Points: " << this->points;
+
+	this->uiText.setString(ss.str());*/ // this works too, but simpler and faster to do below
+
+	this->uiText.setString("Points: " + std::to_string(this->points));
+}
+
 void Game::updateMousePositions()
 {
     /*
@@ -143,29 +174,35 @@ void Game::updateEnemies()
     {
 		bool deleted = false;
 
-		this->enemies[i].move(0.f, 5.f);
-
-        //Check if clicked upon
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-
-            if (this->enemies[i].getGlobalBounds().contains(this->mousePosView)) {
-                deleted = true;
-
-				//Gain points
-                this->points += 10.f;
-            }
-
-        }
+		this->enemies[i].move(0.f, 2.f);
 
         //Remove enemy if bottom of screen
         if (this->enemies[i].getPosition().y > this->window->getSize().y) {
-            deleted = true;
-        }
-
-        if (deleted) {
             this->enemies.erase(this->enemies.begin() + i);
         }
     }
+
+
+    //Check if clicked upon
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+        if (!this->mouseHeld) {
+			this->mouseHeld = true;
+            bool deleted = false;
+            for (int i = 0; i < this->enemies.size() && !deleted; i++) {
+                if (this->enemies[i].getGlobalBounds().contains(this->mousePosView)) {
+				    //Delete the enemy
+                    deleted = true;
+                    this->enemies.erase(this->enemies.begin() + i);
+
+                    //Gain points
+                    this->points += 1.f;
+                    this->updateText();
+                }
+            }
+        }
+    }
+    else
+		this->mouseHeld = false;
 }
 
 void Game::update() {
@@ -177,10 +214,15 @@ void Game::update() {
     this->updateEnemies();
 }
 
-void Game::renderEnemies()
+void Game::renderText(sf::RenderTarget& target)
+{
+    target.draw(this->uiText);
+}
+
+void Game::renderEnemies(sf::RenderTarget& target)
 {
     for (auto& e : this->enemies) {
-		this->window->draw(e);
+		target.draw(e);
     }
 }
 
@@ -197,7 +239,9 @@ void Game::render()
     this->window->clear();
 
     //Draw your game objects here
-    this->renderEnemies();
+    this->renderEnemies(*this->window);
+
+    this->renderText(*this->window);
 
     this->window->display();
 }
