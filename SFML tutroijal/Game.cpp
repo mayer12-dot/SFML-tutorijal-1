@@ -6,7 +6,9 @@ void Game::initVariables()
 	this->window = nullptr;
 
 	//Game logic
+	this->endGame = false;
     this->points = 0;
+    this->health = 10;
     this->enemySpawnTimerMax = 10.f;
     this->enemySpawnTimer = this->enemySpawnTimerMax;
     this->maxEnemies = 10;
@@ -37,7 +39,7 @@ void Game::initText()
     this->uiText.setFont(this->font);
     this->uiText.setCharacterSize(24);
     this->uiText.setFillColor(sf::Color::White);
-    this->uiText.setString(std::to_string(this->points));
+    this->uiText.setString("Points: " + std::to_string(this->points) + '\n' + "Health: " + std::to_string(this->health));
 	this->uiText.setPosition(10.f, 10.f);
 }
 void Game::initEnemies()
@@ -71,6 +73,11 @@ Game::~Game()
 const bool Game::running() const
 {
 	return this->window->isOpen();
+}
+
+const bool Game::getEndGame() const
+{
+    return this->endGame;
 }
 
 
@@ -132,7 +139,7 @@ void Game::updateText()
 
 	this->uiText.setString(ss.str());*/ // this works too, but simpler and faster to do below
 
-	this->uiText.setString("Points: " + std::to_string(this->points));
+	this->uiText.setString("Points: " + std::to_string(this->points) + '\n' + "Health: " + std::to_string(this->health));
 }
 
 void Game::updateMousePositions()
@@ -179,6 +186,8 @@ void Game::updateEnemies()
         //Remove enemy if bottom of screen
         if (this->enemies[i].getPosition().y > this->window->getSize().y) {
             this->enemies.erase(this->enemies.begin() + i);
+			this->health--;
+            this->updateText();
         }
     }
 
@@ -195,7 +204,7 @@ void Game::updateEnemies()
                     this->enemies.erase(this->enemies.begin() + i);
 
                     //Gain points
-                    this->points += 1.f;
+                    this->points += 1;
                     this->updateText();
                 }
             }
@@ -206,12 +215,19 @@ void Game::updateEnemies()
 }
 
 void Game::update() {
+
 	this->pollEvents();
 
-    //Update mouse position
-    this->updateMousePositions();
+    if (!this->endGame) {
+        //Update mouse position
+        this->updateMousePositions();
 
-    this->updateEnemies();
+        this->updateEnemies();
+    }
+
+	//End game condition
+    if (this->health <= 0)
+		this->endGame = true;
 }
 
 void Game::renderText(sf::RenderTarget& target)

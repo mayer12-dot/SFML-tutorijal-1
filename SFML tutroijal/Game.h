@@ -29,7 +29,9 @@ private:
 	sf::Text uiText;
 
 	//Game logic
+	bool endGame;
 	unsigned points;
+	int health;
 	float enemySpawnTimer;
 	float enemySpawnTimerMax;
 	int maxEnemies;
@@ -52,6 +54,7 @@ public:
 
 	//Accessors
 	const bool running() const;
+	//const bool getEndGame() const; // like it better to see screan than close it
 
 	// Functions
 	void spawnEnemy();
