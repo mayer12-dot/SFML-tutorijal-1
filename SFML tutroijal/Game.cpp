@@ -75,10 +75,10 @@ const bool Game::running() const
 	return this->window->isOpen();
 }
 
-const bool Game::getEndGame() const
-{
-    return this->endGame;
-}
+//const bool Game::getEndGame() const
+//{
+//    return this->endGame;
+//}
 
 
 //Functions
